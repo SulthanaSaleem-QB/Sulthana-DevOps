@@ -1,0 +1,23 @@
+steps:
+- name: 'python:3.9.7'
+  script: |
+    #!/bin/bash
+    echo "Building environment '${_CI_ENVIRONMENT_NAME}'"
+    echo "CURRENT_ENVIRONMENT='${_CI_ENVIRONMENT_NAME}'" > mayekawa_backend/settings/env_config.py
+    pip install -r requirements.txt
+    echo -e "$DB_CONFIG" > mayekawa_backend/settings/db_config.py
+    echo -e "$ENV_FILE" > mayekawa_backend/settings/.env
+    echo -e "${_CORS_ORIGIN_WHITELIST}" >> mayekawa_backend/settings/__init__.py
+    python manage.py migrate
+  #   python manage.py collectstatic --noinput
+  secretEnv: ['SERVICE_ACCOUNT_CRED','DB_CONFIG','ENV_FILE']
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_NUMBER/secrets/SERVICE_ACCOUNT_CRED/versions/1
+    env: 'SERVICE_ACCOUNT_CRED'
+  - versionName: projects/$PROJECT_NUMBER/secrets/DB_CONFIG/versions/1
+    env: 'DB_CONFIG'
+  - versionName: projects/$PROJECT_NUMBER/secrets/ENV_FILE/versions/1
+    env: 'ENV_FILE'
+options:
+  automapSubstitutions: true

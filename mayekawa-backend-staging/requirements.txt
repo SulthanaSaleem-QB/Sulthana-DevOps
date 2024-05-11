@@ -1,0 +1,8 @@
+Django==3.2.12
+djangorestframework==3.12.4
+django-auth-adfs==1.14.0
+influxdb-client==1.42.0
+pandas
+matplotlib
+psycopg2-binary==2.8.6
+azure.identity
