@@ -1,0 +1,19 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: python:3.9.7
+  script:
+    - pip install -r requirements.txt
+
+deploy:
+  stage: deploy3.9.7
+  script:
+    - python -m venv appenv
+    - source appenv/bin/activate
+    - pip install -r requirements.txt
+    - zip -r app.zip  requirements.txt manage.py
+    - az login --service-principal -u <client-id> -p <client-secret> --tenant <tenant-id>
+    - az webapp deployment source config-zip --src app.zip --name <app-name> --resource-group <resource-group-name>
