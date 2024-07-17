@@ -1,58 +1,76 @@
-# Terraform Module: Azure MySQL Flexible Server
 
-This Terraform module creates an Azure MySQL Flexible Server along with a MySQL database and optional firewall rules.
+# Azure Virtual Network (VNet) Module
 
-## Module Usage
+This Terraform module creates an Azure Virtual Network (VNet) along with subnets, a network security group (NSG), and associated security rules in Azure. It simplifies the provisioning of network resources for your Azure infrastructure.
 
-To use this module, create a new Terraform configuration file and include the module:
+## Features
+
+- Creates an Azure Virtual Network (VNet) with customizable settings.
+- Defines subnets within the VNet with flexible address prefixes.
+- Configures a Network Security Group (NSG) with inbound and outbound security rules.
+- Supports easy customization of security rules based on your requirements.
+- Modular design for reusability across different Azure environments.
+
+## Usage
 
 ```hcl
-module "azure_sql_db_flexible" {
-  source = "./terraform-azure-sql-db-flexible"
+module "azure_vnet" {
+  source = "./azure_vnet_module"  # Replace with the actual path to the module directory
 
-  resource_group_name                = "my-resource-group"
-  location                           = "Central India"
-  mysql_flexible_server_name         = "testserver01"
-  mysql_sku_name                     = "Standard_B1ms"
-  mysql_administrator_login          = "testadmin"
-  mysql_administrator_login_password = "Password@123"
-  mysql_flexible_database_name       = "mysqldb"
-  mysql_charset                      = "utf8"
-  mysql_collation                    = "utf8_general_ci"
-  mysql_firewall_rules = [
-    {
-      name             = "AllowAllWindowsAzureIps"
-      start_ip_address = "0.0.0.0"
-      end_ip_address   = "0.0.0.0"
-    },
-    {
-      name             = "AllowMyIP"
-      start_ip_address = "123.456.789.0"
-      end_ip_address   = "123.456.789.0"
+  # Input variables
+  resource_group_name     = "my-resource-group"
+  vnet_name               = "my-vnet"
+  address_space           = ["10.0.0.0/16"]
+  location                = "East US"
+  subnet_names            = ["subnet1", "subnet2"]
+  subnet_address_prefixes = ["10.0.1.0/24", "10.0.2.0/24"]
+  nsg_name                = "my-nsg"
+
+  inbound_rules = {
+    rule1 = {
+      name                        = "inbound_rule1"
+      priority                    = 100
+      access                      = "Allow"
+      protocol                    = "TCP"
+      source_port_range           = "*"
+      destination_port_range      = "80"
+      source_address_prefix       = "1.2.3.4"
+      destination_address_prefix  = "10.0.1.0/24"
     }
-  ]
+  }
+
+  outbound_rules = {
+    rule1 = {
+      name                        = "outbound_rule1"
+      priority                    = 100
+      access                      = "Allow"
+      protocol                    = "TCP"
+      source_port_range           = "*"
+      destination_port_range      = "443"
+      source_address_prefix       = "10.0.1.0/24"
+      destination_address_prefix  = "5.6.7.8"
+    }
+  }
 }
+```
 
-Inputs
+## Inputs
 
-Name	Description	Type	Default	Required
-resource_group_name	The name of the resource group.	string	n/a	yes
-location	The location where the resources will be created.	string	n/a	yes
-mysql_flexible_server_name	The name of the MySQL Server.	string	n/a	yes
-mysql_sku_name	The SKU name for the MySQL server.	string	"B_Gen5_1"	yes
-mysql_administrator_login	The administrator login name for the MySQL server.	string	"mysqladmin"	yes
-mysql_administrator_login_password	The password associated with the MySQL administrator login.	string	n/a	yes
-mysql_flexible_database_name	The name of the MySQL database.	string	n/a	yes
-mysql_charset	The charset for the MySQL database.	string	"utf8"	yes
-mysql_collation	The collation for the MySQL database.	string	"utf8_general_ci"	yes
-mysql_firewall_rules	A list of firewall rules to apply to the MySQL server.	list(object({ name = string, start_ip_address = string, end_ip_address = string }))	[]	no
+| Name                   | Description                                  | Type       | Default | Required |
+|------------------------|----------------------------------------------|------------|---------|----------|
+| `resource_group_name`  | Name of the Azure Resource Group.            | `string`   |         | Yes      |
+| `vnet_name`            | Name of the Azure Virtual Network.           | `string`   |         | Yes      |
+| `address_space`        | Address space for the VNet.                  | `list(string)` |   | Yes      |
+| `location`             | Azure region where resources will be created.| `string`   |         | Yes      |
+| `subnet_names`         | List of subnet names.                        | `list(string)` |     | Yes      |
+| `subnet_address_prefixes` | List of subnet address prefixes.         | `list(string)` |     | Yes      |
+| `nsg_name`             | Name of the Network Security Group (NSG).   | `string`   |         | Yes      |
+| `inbound_rules`        | Map of inbound security rules.               | `map(object)`  |         | Yes      |
+| `outbound_rules`       | Map of outbound security rules.              | `map(object)`  |         | Yes      |
 
+## Outputs
 
-Outputs
-
-Name	Description
-mysql_server_name	The name of the MySQL server.
-mysql_server_fully_qualified_domain_name	The fully qualified domain name of the MySQL server.
-mysql_database_name	The name of the MySQL database.
-
-
+| Name        | Description                                       |
+|-------------|---------------------------------------------------|
+| `vnet_id`   | The ID of the created Azure Virtual Network.     |
+| `subnet_ids`| List of IDs of the created subnets.              |
