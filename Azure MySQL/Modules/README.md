@@ -55,35 +55,33 @@ module "azure_sql_db_flexible" {
 
 | Name                   | Description                                  | Type       | Default | Required |
 |------------------------|----------------------------------------------|------------|---------|----------|
-| `resource_group_name`  | Name of the Azure Resource Group.            | `string`   |         | Yes      |
-| `vnet_name`            | Name of the Azure Virtual Network.           | `string`   |         | Yes      |
-| `address_space`        | Address space for the VNet.                  | `list(string)` |   | Yes      |
-| `location`             | Azure region where resources will be created.| `string`   |         | Yes      |
-| `subnet_names`         | List of subnet names.                        | `list(string)` |     | Yes      |
-| `subnet_address_prefixes` | List of subnet address prefixes.         | `list(string)` |     | Yes      |
-| `nsg_name`             | Name of the Network Security Group (NSG).   | `string`   |         | Yes      |
-| `inbound_rules`        | Map of inbound security rules.               | `map(object)`  |         | Yes      |
-| `outbound_rules`       | Map of outbound security rules.              | `map(object)`  |         | Yes      |
-|  'subnet_service_endpoints' |  The service endpoints for the Azure subnet.| `list(string)`  | n/a |Yes      |
-|subnet_delegation_name	           |  The name of the subnet delegation.	                         | string	        |   n/a	                      |     yes    |
-|subnet_service_delegation_name	   |  The service delegation name for the subnet.	                 | string	        |   n/a	                      |     yes    |
-|subnet_service_delegation_actions |  The actions allowed for the subnet service delegation.       | list(string)   |   n/a                     	|     yes    |
-|private_dns_zone_name	           |  The name of the Azure private DNS zone.	                     | string	        |   n/a	                      |     yes    |
-|private_dns_zone_link_name	       |  The name of the virtual network link to private DNS zone.	   | string	        |   n/a	                      |     yes    |
-|mysql_server_name	               |  The name of the MySQL Server.                                | string         |   n/a	                      |     yes    |
-|mysql_admin_login	               |  The administrator login name for the MySQL server.	         | string	        |   n/a                    	  |     yes    |
-|mysql_admin_password	             |  The password associated with the MySQL administrator login.  | string	        |   n/a	                      |     yes    |
-|mysql_backup_retention_days	     |  The backup retention days for the MySQL server.              | number         |   	7	                      |     yes    |
-|mysql_sku_name	                   |  The SKU name for the MySQL server.	                         | string	        |   "GP_Standard_D2ds_v4"	    |     yes    |
-|mysql_zone	                       |  The availability zone for the MySQL server.	                 | string	        |   "2"	                      |     yes    |
-|mysql_database_name               |  The name of the MySQL database.	                             | string	        |    n/a                   	  |     yes    |
-|mysql_database_charset	           |  The charset for the MySQL database.	                         | string	        |   "utf8"	                  |     yes    |
-|mysql_database_collation	         |  The collation for the MySQL database.	                       | string	        |   "utf8_general_ci"	        |     yes    |
+| `resource_group_name`  | Name of the Azure Resource Group.            | `string`   |    n/a     | Yes      |
+| `vnet_name`            | Name of the Azure Virtual Network.           | `string`   |    n/a     | Yes      |
+| `address_space`        | Address space for the VNet.                  | `list(string)` |n/a   | Yes      |
+| `location`             | Azure region where resources will be created.| `string`   |    n/a     | Yes      |
+| `subnet_names`         | List of subnet names.                        | `list(string)` |   n/a  | Yes      |
+| `subnet_address_prefixes` | List of subnet address prefixes.         | `list(string)` |  n/a   | Yes      |
+| `subnet_service_endpoints`|  The service endpoints for the Azure subnet.| `list(string)`  | n/a |Yes      |
+| `subnet_delegation_name`           |  The name of the subnet delegation.	                         | `string`	        |   n/a	                      |     yes    |
+| `subnet_service_delegation_name`	   |  The service delegation name for the subnet.	                 | `string`	        |   n/a	                      |     yes    |
+| `subnet_service_delegation_actions` |  The actions allowed for the subnet service delegation.       | `list(string)`   |   n/a                     	|     yes    |
+| `private_dns_zone_name`	           |  The name of the Azure private DNS zone.	                     | `string`	        |   n/a	                      |     yes    |
+| `private_dns_zone_link_name`	       |  The name of the virtual network link to private DNS zone.	   | `string`	        |   n/a	                      |     yes    |
+| `mysql_server_name`	               |  The name of the MySQL Server.                                | `string`         |   n/a	                      |     yes    |
+| `mysql_admin_login`	               |  The administrator login name for the MySQL server.	         | `string`	        |   n/a                    	  |     yes    |
+| `mysql_admin_password`             |  The password associated with the MySQL administrator login.  | `string`	        |   n/a	                      |     yes    |
+| `mysql_backup_retention_days`	     |  The backup retention days for the MySQL server.              | `number`         |   	7	                      |     yes    |
+| `mysql_sku_name`	                   |  The SKU name for the MySQL server.	                         | `string`	        |   "GP_Standard_D2ds_v4"	    |     yes    |
+| `mysql_zone`                       |  The availability zone for the MySQL server.	                 | `string`	        |   "2"	                      |     yes    |
+| `mysql_database_name`               |  The name of the MySQL database.	                             | `string`	        |    n/a                   	  |     yes    |
+| `mysql_database_charset`	           |  The charset for the MySQL database.	                         | `string`	        |   "utf8"	                  |     yes    |
+| `mysql_database_collation`	         |  The collation for the MySQL database.	                       | `string`	        |   "utf8_general_ci"	        |     yes    |
 
 
 ## Outputs
 
 | Name        | Description                                       |
 |-------------|---------------------------------------------------|
-| `vnet_id`   | The ID of the created Azure Virtual Network.     |
-| `subnet_ids`| List of IDs of the created subnets.              |
+| `mysql_server_name`	                            |    The name of the MySQL server.                         |
+| `mysql_server_fully_qualified_domain_name`	      |    The fully qualified domain name of the MySQL server.  |
+| `mysql_database_name`	                          |    The name of the MySQL database.                       |
