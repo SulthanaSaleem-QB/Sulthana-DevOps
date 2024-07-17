@@ -1,58 +1,55 @@
+# Terraform Module: Azure MySQL Flexible Server
 
-# Azure Virtual Network (VNet) Module
+This Terraform module creates an Azure MySQL Flexible Server along with a MySQL database and optional firewall rules.
 
-This Terraform module creates an Azure Virtual Network (VNet) along with subnets, a network security group (NSG), and associated security rules in Azure. It simplifies the provisioning of network resources for your Azure infrastructure.
+## Module Usage
 
-## Features
-
-- Creates an Azure Virtual Network (VNet) with customizable settings.
-- Defines subnets within the VNet with flexible address prefixes.
-- Configures a Network Security Group (NSG) with inbound and outbound security rules.
-- Supports easy customization of security rules based on your requirements.
-- Modular design for reusability across different Azure environments.
-
-## Usage
+To use this module, create a new Terraform configuration file and include the module:
 
 ```hcl
-module "azure_vnet" {
-  source = "./azure_vnet_module"  # Replace with the actual path to the module directory
+provider "azurerm" {
+  features {}
+}
 
-  # Input variables
-  resource_group_name     = "my-resource-group"
-  vnet_name               = "my-vnet"
-  address_space           = ["10.0.0.0/16"]
-  location                = "East US"
-  subnet_names            = ["subnet1", "subnet2"]
-  subnet_address_prefixes = ["10.0.1.0/24", "10.0.2.0/24"]
-  nsg_name                = "my-nsg"
+module "azure_sql_db_flexible" {
+  source = "./terraform-azure-sql-db-flexible"
 
-  inbound_rules = {
-    rule1 = {
-      name                        = "inbound_rule1"
-      priority                    = 100
-      access                      = "Allow"
-      protocol                    = "TCP"
-      source_port_range           = "*"
-      destination_port_range      = "80"
-      source_address_prefix       = "1.2.3.4"
-      destination_address_prefix  = "10.0.1.0/24"
+  resource_group_name                = "sample-resource-group"
+  location                           = "Central India"
+  virtual_network_name               = "my-vnet"
+  address_space                      = ["10.0.0.0/16"]
+  subnet_name                        = "my-subnet"
+  subnet_address_prefixes            = ["10.0.2.0/24"]
+  subnet_service_endpoints           = ["Microsoft.Storage"]
+  subnet_delegation_name             = "test-delegation"
+  subnet_service_delegation_name     = "Microsoft.DBforMySQL/flexibleServers"
+  subnet_service_delegation_actions  = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+  private_dns_zone_name              = "test.mysql.database.azure.com"
+  private_dns_zone_link_name         = "sampleVnetZone.com"
+  mysql_server_name                  = "sample-mysql-server"
+  mysql_admin_login                  = "mysqladmin"
+  mysql_admin_password               = "Password@123"
+  mysql_backup_retention_days        = 7
+  mysql_sku_name                     = "B_Standard_B1s"
+  mysql_zone                         = "2"
+  mysql_database_name                = "sample-mysql-db"
+  mysql_database_charset             = "utf8"
+  mysql_database_collation           = "utf8_general_ci"
+  mysql_firewall_rules = [
+    {
+      name             = "AllowAllWindowsAzureIps"
+      start_ip_address = "0.0.0.0"
+      end_ip_address   = "0.0.0.0"
+    },
+    {
+      name             = "AllowMyIP"
+      start_ip_address = "123.456.789.0"
+      end_ip_address   = "123.456.789.0"
     }
-  }
-
-  outbound_rules = {
-    rule1 = {
-      name                        = "outbound_rule1"
-      priority                    = 100
-      access                      = "Allow"
-      protocol                    = "TCP"
-      source_port_range           = "*"
-      destination_port_range      = "443"
-      source_address_prefix       = "10.0.1.0/24"
-      destination_address_prefix  = "5.6.7.8"
-    }
-  }
+  ]
 }
 ```
+
 
 ## Inputs
 
@@ -67,6 +64,22 @@ module "azure_vnet" {
 | `nsg_name`             | Name of the Network Security Group (NSG).   | `string`   |         | Yes      |
 | `inbound_rules`        | Map of inbound security rules.               | `map(object)`  |         | Yes      |
 | `outbound_rules`       | Map of outbound security rules.              | `map(object)`  |         | Yes      |
+|  'subnet_service_endpoints' |  The service endpoints for the Azure subnet.| `list(string)`  | n/a |Yes      |
+|subnet_delegation_name	           |  The name of the subnet delegation.	                         | string	        |   n/a	                      |     yes    |
+|subnet_service_delegation_name	   |  The service delegation name for the subnet.	                 | string	        |   n/a	                      |     yes    |
+|subnet_service_delegation_actions |  The actions allowed for the subnet service delegation.       | list(string)   |   n/a                     	|     yes    |
+|private_dns_zone_name	           |  The name of the Azure private DNS zone.	                     | string	        |   n/a	                      |     yes    |
+|private_dns_zone_link_name	       |  The name of the virtual network link to private DNS zone.	   | string	        |   n/a	                      |     yes    |
+|mysql_server_name	               |  The name of the MySQL Server.                                | string         |   n/a	                      |     yes    |
+|mysql_admin_login	               |  The administrator login name for the MySQL server.	         | string	        |   n/a                    	  |     yes    |
+|mysql_admin_password	             |  The password associated with the MySQL administrator login.  | string	        |   n/a	                      |     yes    |
+|mysql_backup_retention_days	     |  The backup retention days for the MySQL server.              | number         |   	7	                      |     yes    |
+|mysql_sku_name	                   |  The SKU name for the MySQL server.	                         | string	        |   "GP_Standard_D2ds_v4"	    |     yes    |
+|mysql_zone	                       |  The availability zone for the MySQL server.	                 | string	        |   "2"	                      |     yes    |
+|mysql_database_name               |  The name of the MySQL database.	                             | string	        |    n/a                   	  |     yes    |
+|mysql_database_charset	           |  The charset for the MySQL database.	                         | string	        |   "utf8"	                  |     yes    |
+|mysql_database_collation	         |  The collation for the MySQL database.	                       | string	        |   "utf8_general_ci"	        |     yes    |
+
 
 ## Outputs
 
